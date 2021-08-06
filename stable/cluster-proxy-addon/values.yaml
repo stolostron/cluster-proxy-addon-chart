@@ -1,0 +1,18 @@
+org: open-cluster-management
+
+global:
+  pullPolicy: Always
+  imageOverrides:
+    clusterProxyAddOn: ""
+
+arch:
+  - amd64
+  - ppc64le
+  - s390x
+
+pullSecret: null
+
+hubconfig:
+  nodeSelector: null
+  replicaCount: 1
+  proxyConfigs: {}
