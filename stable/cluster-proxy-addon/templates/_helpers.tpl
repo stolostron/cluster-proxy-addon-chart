@@ -30,3 +30,15 @@ Create chart name and version as used by the chart label.
 {{- define "cluster-proxy-addon.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Define anp route host.
+*/}}
+{{- define "cluster-proxy-addon.consoleRouteHost" -}}
+{{- $firstfourchars := .Values.cluster_basedomain | trunc 4 -}}
+{{- if eq $firstfourchars "apps" }}
+{{- printf "%s.%s" .Values.anp_route.name .Values.cluster_basedomain | trimSuffix "-" -}}
+{{- else }}
+{{- printf "%s.apps.%s" .Values.anp_route.name .Values.cluster_basedomain | trimSuffix "-" -}}
+{{- end }}
+{{- end -}}
