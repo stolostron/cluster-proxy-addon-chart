@@ -12,8 +12,10 @@ metadata:
     helm.sh/chart: {{ template "cluster-proxy-addon.chart" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
+  annotations:
+      haproxy.router.openshift.io/timeout: 60s
 spec:
-  host: {{ template "cluster-proxy-addon.consoleRouteHost" . }}
+  host: {{ template "cluster-proxy-addon.consolePublicHost" . }}
   port:
     targetPort: anp-port
   tls:

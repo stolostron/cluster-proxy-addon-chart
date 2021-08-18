@@ -34,11 +34,18 @@ Create chart name and version as used by the chart label.
 {{/*
 Define anp route host.
 */}}
-{{- define "cluster-proxy-addon.consoleRouteHost" -}}
+{{- define "cluster-proxy-addon.consolePublicHost" -}}
 {{- $firstfourchars := .Values.cluster_basedomain | trunc 4 -}}
 {{- if eq $firstfourchars "apps" }}
 {{- printf "%s.%s" .Values.anp_route.name .Values.cluster_basedomain | trimSuffix "-" -}}
 {{- else }}
 {{- printf "%s.apps.%s" .Values.anp_route.name .Values.cluster_basedomain | trimSuffix "-" -}}
 {{- end }}
+{{- end -}}
+
+{{/*
+Define anp route host.
+*/}}
+{{- define "cluster-proxy-addon.consolePublicPort" -}}
+{{- print 443 -}}
 {{- end -}}
