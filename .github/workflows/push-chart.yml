@@ -5,7 +5,7 @@ on:
     branches:
     - release-*
     paths:
-    - 'stable/grc/**'
+    - 'stable/cluster-proxy-addon/**'
 
   workflow_dispatch:
 
