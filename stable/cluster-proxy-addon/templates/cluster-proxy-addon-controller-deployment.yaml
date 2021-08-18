@@ -84,7 +84,8 @@ spec:
         args:
           - "/cluster-proxy"
           - "controller"
-          - "--anp-route-host={{ template "cluster-proxy-addon.consoleRouteHost" . }}"
+          - "--anp-public-host={{ template "cluster-proxy-addon.consolePublicHost" . }}"
+          - "--anp-public-port={{ template "cluster-proxy-addon.consolePublicPort" . }}"
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
