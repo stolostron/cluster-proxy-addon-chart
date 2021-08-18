@@ -1,14 +1,14 @@
-kind: Deployment
 apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: {{ template "cluster-proxy-addon.fullname" . }}-controller
+  name: {{ template "cluster-proxy-addon.fullname" . }}-anp-server
   labels:
     app: {{ template "cluster-proxy-addon.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ template "cluster-proxy-addon.name" . }}
     chart: {{ template "cluster-proxy-addon.chart" . }}
-    component: cluster-proxy-addon-controller
+    component: cluster-proxy-addon-anp-server
     helm.sh/chart: {{ template "cluster-proxy-addon.chart" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
@@ -18,7 +18,7 @@ spec:
     matchLabels:
       app: {{ template "cluster-proxy-addon.name" . }}
       release: {{ .Release.Name }}
-      component: cluster-proxy-addon-controller
+      component: cluster-proxy-addon-anp-server
   template:
     metadata:
       labels:
@@ -27,10 +27,10 @@ spec:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/name: {{ template "cluster-proxy-addon.name" . }}
         chart: {{ template "cluster-proxy-addon.chart" . }}
-        component: cluster-proxy-addon-controller
+        component: cluster-proxy-addon-anp-server
         helm.sh/chart: {{ template "cluster-proxy-addon.chart" . }}
         heritage: {{ .Release.Service }}
-        ocm-antiaffinity-selector: cluster-proxy-addon-controller
+        ocm-antiaffinity-selector: cluster-proxy-addon-anp-server
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ template "cluster-proxy-addon.fullname" . }}
@@ -60,7 +60,7 @@ spec:
                 - key: ocm-antiaffinity-selector
                   operator: In
                   values:
-                  - cluster-proxy-addon-controller
+                  - cluster-proxy-addon-anp-server
           - weight: 35
             podAffinityTerm:
               topologyKey: kubernetes.io/hostname
@@ -69,7 +69,7 @@ spec:
                 - key: ocm-antiaffinity-selector
                   operator: In
                   values:
-                  - cluster-proxy-addon-controller
+                  - cluster-proxy-addon-anp-server
       tolerations:
         - key: dedicated
           operator: Exists
@@ -78,54 +78,63 @@ spec:
           key: node-role.kubernetes.io/infra 
           operator: Exists
       containers:
-      - name: cluster-proxy
+      - name: anp-server
         image: {{ .Values.global.imageOverrides.clusterProxyAddOn }}
         imagePullPolicy: {{ .Values.global.pullPolicy }}
         args:
-          - "/cluster-proxy"
-          - "controller"
+          - "/proxy-server"
+          - "--mode=http-connect"
+          - "--agent-port=9091"
+          - "--server-port=0"
+          - "--cluster-ca-cert=/ca/ca-bundle.crt"
+          - "--cluster-cert=/tls/tls.crt"
+          - "--cluster-key=/tls/tls.key"
+          - "--proxy-strategies=destHost"
+          - "--uds-name=/tmp/cluster-proxy-addon-socket"
+          - "--delete-existing-uds-file=true"
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
             - ALL
           privileged: false
-          readOnlyRootFilesystem: true
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            scheme: HTTPS
-            port: 8443
-          initialDelaySeconds: 2
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            scheme: HTTPS
-            port: 8443
-          initialDelaySeconds: 2
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-        env:
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-        {{- if .Values.hubconfig.proxyConfigs }}
-          - name: HTTP_PROXY
-            value: {{ .Values.hubconfig.proxyConfigs.HTTP_PROXY }}
-          - name: HTTPS_PROXY
-            value: {{ .Values.hubconfig.proxyConfigs.HTTPS_PROXY }}
-          - name: NO_PROXY
-            value: {{ .Values.hubconfig.proxyConfigs.NO_PROXY }}
-        {{- end }}
-      {{- if .Values.pullSecret }}
-      imagePullSecrets:
-      - name: {{ .Values.pullSecret }}
-      {{- end }}
-      {{- with .Values.hubconfig.nodeSelector }}
-      nodeSelector:
-      {{ toYaml . | indent 8 }}
-      {{- end }}
+        volumeMounts:
+          - name: tls-vol
+            mountPath: /tls
+            readOnly: true
+          - name: ca-vol
+            mountPath: /ca
+            readOnly: true
+        ports:
+          - name: agentport
+            containerPort: 9091
+      - name: user-proxy
+        image: {{ .Values.global.imageOverrides.clusterProxyAddOn }}
+        imagePullPolicy: {{ .Values.global.pullPolicy }}
+        args:
+          - "/cluster-proxy"
+          - "anp-user-server"
+          - "--server-port=9092"
+          - "--server-key=/tls/tls.key"
+          - "--server-cert=/tls/tls.crt"
+          - "--proxy-uds=/tmp/cluster-proxy-addon-socket"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+        volumeMounts:
+          - name: tls-vol
+            mountPath: /tls
+            readOnly: true
+        ports:
+          - name: userport
+            containerPort: 9092
+      volumes:
+        - name: tls-vol
+          secret:
+            secretName: cluster-proxy-addon-serving-cert
+        - name: ca-vol
+          configMap:
+            name: cluster-proxy-ca-bundle

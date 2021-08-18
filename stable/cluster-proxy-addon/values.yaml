@@ -16,3 +16,8 @@ hubconfig:
   nodeSelector: null
   replicaCount: 1
   proxyConfigs: {}
+
+cluster_basedomain: ""
+
+anp_route:
+  name: cluster-proxy-anp
