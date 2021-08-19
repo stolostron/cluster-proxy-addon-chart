@@ -1,7 +1,7 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ template "cluster-proxy-addon.name" . }}-anp
+  name: {{ template "cluster-proxy-addon.name" . }}-user
   labels:
     app: {{ template "cluster-proxy-addon.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -15,9 +15,9 @@ metadata:
   annotations:
       haproxy.router.openshift.io/timeout: 60s
 spec:
-  host: {{ template "cluster-proxy-addon.anpPublicHost" . }}
+  host: {{ template "cluster-proxy-addon.userPublicHost" . }}
   port:
-    targetPort: anp-port
+    targetPort: user-port
   tls:
     termination: passthrough
   to:
