@@ -1,4 +1,4 @@
-ame: Push commits to current release branch
+name: Push commits to current release branch
 
 on:
   push:
