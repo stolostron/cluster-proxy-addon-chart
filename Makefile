@@ -1,9 +1,9 @@
 HELM?=_output/linux-amd64/helm
 KUBECTL?=kubectl
 
-IMAGE=quay.io/skeeey/cluster-proxy-addon:latest
+IMAGE=quay.io/open-cluster-management/cluster-proxy-addon:latest
 IMAGE_PULL_POLICY=Always
-CLUSTER_BASE_DOMAIN=apps.wlawscluster1.dev04.red-chesterfield.com
+CLUSTER_BASE_DOMAIN=
 
 ensure-helm:
 	mkdir -p _output
@@ -25,4 +25,7 @@ deploy: ensure-helm
 
 clean: ensure-helm
 	$(HELM) delete -n open-cluster-management cluster-proxy-addon
+	$(KUBECTL) delete -n open-cluster-management configmaps cluster-proxy-ca-bundle
+	$(KUBECTL) delete -n open-cluster-management secrets cluster-proxy-addon-serving-cert
+	$(KUBECTL) delete -n open-cluster-management secrets cluster-proxy-signer
 .PHONY: clean

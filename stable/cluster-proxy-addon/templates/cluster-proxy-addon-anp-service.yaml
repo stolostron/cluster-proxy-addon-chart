@@ -1,5 +1,5 @@
-apiVersion: route.openshift.io/v1
-kind: Route
+apiVersion: v1
+kind: Service
 metadata:
   name: {{ template "cluster-proxy-addon.name" . }}-anp
   labels:
@@ -12,14 +12,11 @@ metadata:
     helm.sh/chart: {{ template "cluster-proxy-addon.chart" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-  annotations:
-      haproxy.router.openshift.io/timeout: 60s
 spec:
-  host: {{ template "cluster-proxy-addon.anpPublicHost" . }}
-  port:
-    targetPort: anp-port
-  tls:
-    termination: passthrough
-  to:
-    kind: Service
-    name: {{ template "cluster-proxy-addon.name" . }}-anp
+  ports:
+  - name: anp-port
+    port: 9091
+  selector:
+    app: {{ template "cluster-proxy-addon.name" . }}
+    component: cluster-proxy-addon-anp-server
+    release: {{ .Release.Name }}
