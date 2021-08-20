@@ -19,7 +19,7 @@ deploy: ensure-helm
 	$(KUBECTL) get ns open-cluster-management ; if [ $$? -ne 0 ] ; then $(KUBECTL) create ns open-cluster-management ; fi
 	$(HELM) install -n open-cluster-management cluster-proxy-addon stable/cluster-proxy-addon \
 	--set global.pullPolicy="$(IMAGE_PULL_POLICY)" \
-	--set global.imageOverrides.clusterProxyAddOn="$(IMAGE)" \
+	--set global.imageOverrides.cluster_proxy_addon="$(IMAGE)" \
 	--set cluster_basedomain="$(CLUSTER_BASE_DOMAIN)" 
 .PHONY: deploy
 

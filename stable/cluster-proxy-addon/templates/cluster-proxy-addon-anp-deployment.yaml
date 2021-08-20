@@ -91,7 +91,7 @@ spec:
           - "--cluster-cert=/tls/tls.crt"
           - "--cluster-key=/tls/tls.key"
           - "--proxy-strategies=destHost"
-          - "--uds-name=/tmp/cluster-proxy-addon-socket"
+          - "--uds-name=/tmp/cluster-proxy-addon/socket"
           - "--delete-existing-uds-file=true"
         env:
         {{- if .Values.hubconfig.proxyConfigs }}
@@ -115,6 +115,8 @@ spec:
           - name: ca-vol
             mountPath: /ca
             readOnly: true
+          - name: uds-socket 
+            mountPath: /tmp/cluster-proxy-addon
         ports:
           - name: agentport
             containerPort: 9091
@@ -127,7 +129,7 @@ spec:
           - "--server-port=9092"
           - "--server-key=/tls/tls.key"
           - "--server-cert=/tls/tls.crt"
-          - "--proxy-uds=/tmp/cluster-proxy-addon-socket"
+          - "--proxy-uds=/tmp/cluster-proxy-addon/socket"
         env:
         {{- if .Values.hubconfig.proxyConfigs }}
           - name: HTTP_PROXY
@@ -147,10 +149,14 @@ spec:
           - name: user-tls-vol
             mountPath: /tls
             readOnly: true
+          - name: uds-socket 
+            mountPath: /tmp/cluster-proxy-addon
         ports:
           - name: userport
             containerPort: 9092
       volumes:
+        - name: uds-socket
+          emptyDir: {}
         - name: user-tls-vol
           secret:
             secretName: cluster-proxy-user-proxy-serving-cert
