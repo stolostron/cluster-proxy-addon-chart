@@ -79,7 +79,7 @@ spec:
           operator: Exists
       containers:
       - name: cluster-proxy
-        image: {{ .Values.global.imageOverrides.clusterProxyAddOn }}
+        image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
         imagePullPolicy: {{ .Values.global.pullPolicy }}
         args:
           - "/cluster-proxy"
@@ -128,5 +128,5 @@ spec:
       {{- end }}
       {{- with .Values.hubconfig.nodeSelector }}
       nodeSelector:
-      {{ toYaml . | indent 8 }}
+{{ toYaml . | indent 8 }}
       {{- end }}

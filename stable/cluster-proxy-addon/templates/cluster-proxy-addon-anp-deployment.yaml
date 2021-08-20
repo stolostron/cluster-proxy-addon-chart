@@ -79,7 +79,7 @@ spec:
           operator: Exists
       containers:
       - name: anp-server
-        image: {{ .Values.global.imageOverrides.clusterProxyAddOn }}
+        image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
         imagePullPolicy: {{ .Values.global.pullPolicy }}
         args:
           - "/proxy-server"
@@ -93,6 +93,15 @@ spec:
           - "--proxy-strategies=destHost"
           - "--uds-name=/tmp/cluster-proxy-addon-socket"
           - "--delete-existing-uds-file=true"
+        env:
+        {{- if .Values.hubconfig.proxyConfigs }}
+          - name: HTTP_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.HTTP_PROXY }}
+          - name: HTTPS_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.HTTPS_PROXY }}
+          - name: NO_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.NO_PROXY }}
+        {{- end }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -110,7 +119,7 @@ spec:
           - name: agentport
             containerPort: 9091
       - name: user-proxy
-        image: {{ .Values.global.imageOverrides.clusterProxyAddOn }}
+        image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
         imagePullPolicy: {{ .Values.global.pullPolicy }}
         args:
           - "/cluster-proxy"
@@ -119,6 +128,15 @@ spec:
           - "--server-key=/tls/tls.key"
           - "--server-cert=/tls/tls.crt"
           - "--proxy-uds=/tmp/cluster-proxy-addon-socket"
+        env:
+        {{- if .Values.hubconfig.proxyConfigs }}
+          - name: HTTP_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.HTTP_PROXY }}
+          - name: HTTPS_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.HTTPS_PROXY }}
+          - name: NO_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.NO_PROXY }}
+        {{- end }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -142,3 +160,19 @@ spec:
         - name: ca-vol
           configMap:
             name: cluster-proxy-ca-bundle
+        {{- if .Values.hubconfig.proxyConfigs }}
+          - name: HTTP_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.HTTP_PROXY }}
+          - name: HTTPS_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.HTTPS_PROXY }}
+          - name: NO_PROXY
+            value: {{ .Values.hubconfig.proxyConfigs.NO_PROXY }}
+        {{- end }}
+      {{- if .Values.pullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.pullSecret }}
+      {{- end }}
+      {{- with .Values.hubconfig.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
