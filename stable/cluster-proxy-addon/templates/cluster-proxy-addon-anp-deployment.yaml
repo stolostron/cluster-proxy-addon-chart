@@ -100,7 +100,7 @@ spec:
             - ALL
           privileged: false
         volumeMounts:
-          - name: tls-vol
+          - name: anp-tls-vol
             mountPath: /tls
             readOnly: true
           - name: ca-vol
@@ -126,14 +126,17 @@ spec:
             - ALL
           privileged: false
         volumeMounts:
-          - name: tls-vol
+          - name: user-tls-vol
             mountPath: /tls
             readOnly: true
         ports:
           - name: userport
             containerPort: 9092
       volumes:
-        - name: tls-vol
+        - name: user-tls-vol
+          secret:
+            secretName: cluster-proxy-user-proxy-serving-cert
+        - name: anp-tls-vol
           secret:
             secretName: cluster-proxy-addon-serving-cert
         - name: ca-vol
