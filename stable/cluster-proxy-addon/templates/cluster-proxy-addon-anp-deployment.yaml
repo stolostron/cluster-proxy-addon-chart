@@ -13,7 +13,8 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.hubconfig.replicaCount }}
+  # fixed replicas to 1, the anp-server does not support multiple replicas
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "cluster-proxy-addon.name" . }}
