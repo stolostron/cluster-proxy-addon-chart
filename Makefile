@@ -23,6 +23,13 @@ deploy: ensure-helm
 	--set cluster_basedomain="$(CLUSTER_BASE_DOMAIN)" 
 .PHONY: deploy
 
+deploy-local: ensure-helm
+	$(KUBECTL) get ns open-cluster-management ; if [ $$? -ne 0 ] ; then $(KUBECTL) create ns open-cluster-management ; fi
+	$(HELM) install -n open-cluster-management cluster-proxy-addon local-test/cluster-proxy-addon \
+	--set global.pullPolicy="$(IMAGE_PULL_POLICY)" \
+	--set global.imageOverrides.cluster_proxy_addon="$(IMAGE)" \
+	--set cluster_basedomain="$(CLUSTER_BASE_DOMAIN)"	
+
 clean: ensure-helm
 	$(HELM) delete -n open-cluster-management cluster-proxy-addon
 	$(KUBECTL) delete -n open-cluster-management configmaps cluster-proxy-ca-bundle
