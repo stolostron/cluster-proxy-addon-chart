@@ -109,6 +109,13 @@ spec:
             drop:
             - ALL
           privileged: false
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            port: 8180
+            path: "/proxy-server-config-checker"
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
         volumeMounts:
           - name: anp-tls-vol
             mountPath: /tls
@@ -121,6 +128,24 @@ spec:
         ports:
           - name: agentport
             containerPort: 9091
+      - name: proxy-server-config-checker
+        image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
+        imagePullPolicy: {{ .Values.global.pullPolicy }} 
+        args:
+          - "/cluster-proxy"
+          - "config-checker"
+          - "--name=proxy-server-config-checker"
+          - "--port=8180"
+          - "--files=/ca/ca-bundle.crt"
+          - "--files=/tls/tls.crt"
+          - "--files=/tls/tls.key"
+        volumeMounts:
+          - name: anp-tls-vol
+            mountPath: /tls
+            readOnly: true
+          - name: ca-vol
+            mountPath: /ca
+            readOnly: true
       - name: user-proxy
         image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
         imagePullPolicy: {{ .Values.global.pullPolicy }}
@@ -146,6 +171,13 @@ spec:
             drop:
             - ALL
           privileged: false
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            port: 8181
+            path: "/user-server-config-checker"
+          initialDelaySeconds: 60
+          timeoutSeconds: 60
         volumeMounts:
           - name: user-tls-vol
             mountPath: /tls
@@ -155,6 +187,20 @@ spec:
         ports:
           - name: userport
             containerPort: 9092
+      - name: user-server-config-checker
+        image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
+        imagePullPolicy: {{ .Values.global.pullPolicy }} 
+        args:
+          - "/cluster-proxy"
+          - "config-checker"
+          - "--name=user-server-config-checker"
+          - "--port=8181"
+          - "--files=/tls/tls.crt"
+          - "--files=/tls/tls.key"
+        volumeMounts:
+          - name: user-tls-vol
+            mountPath: /tls
+            readOnly: true
       volumes:
         - name: uds-socket
           emptyDir: {}
