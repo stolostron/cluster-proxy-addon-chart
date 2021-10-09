@@ -59,3 +59,7 @@ rules:
 - apiGroups: ["certificates.k8s.io"]
   resources: ["certificatesigningrequests/status"]
   verbs: ["update"]
+# Allow cluster-proxy-addon hub controller to get managed cluster image registries
+- apiGroups: ["imageregistry.open-cluster-management.io"]
+  resources: ["managedclusterimageregistries", "managedclusterimageregistries/status"]
+  verbs: ["get", "list", "watch"]
