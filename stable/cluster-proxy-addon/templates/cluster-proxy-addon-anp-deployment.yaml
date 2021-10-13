@@ -116,6 +116,7 @@ spec:
             path: "/proxy-server-config-checker"
           initialDelaySeconds: 60
           timeoutSeconds: 60
+          failureThreshold: 1
         volumeMounts:
           - name: anp-tls-vol
             mountPath: /tls
@@ -178,6 +179,7 @@ spec:
             path: "/user-server-config-checker"
           initialDelaySeconds: 60
           timeoutSeconds: 60
+          failureThreshold: 1
         volumeMounts:
           - name: user-tls-vol
             mountPath: /tls
