@@ -1,4 +1,4 @@
-org: open-cluster-management
+org: stolostron
 
 global:
   pullPolicy: Always

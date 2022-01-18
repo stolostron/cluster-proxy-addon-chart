@@ -1,7 +1,7 @@
 HELM?=_output/linux-amd64/helm
 KUBECTL?=kubectl
 
-IMAGE=quay.io/open-cluster-management/cluster-proxy-addon:latest
+IMAGE=quay.io/stolostron/cluster-proxy-addon:latest
 IMAGE_PULL_POLICY=Always
 CLUSTER_BASE_DOMAIN=
 
