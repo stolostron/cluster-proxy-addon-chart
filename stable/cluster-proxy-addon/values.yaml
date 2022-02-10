@@ -15,6 +15,13 @@ pullSecret: null
 hubconfig:
   nodeSelector: null
   replicaCount: 1
+  tolerations:
+    - key: dedicated
+      operator: Exists
+      effect: NoSchedule
+    - effect: NoSchedule 
+      key: node-role.kubernetes.io/infra 
+      operator: Exists
   proxyConfigs: {}
 
 cluster_basedomain: ""

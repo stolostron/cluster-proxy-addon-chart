@@ -71,13 +71,10 @@ spec:
                   operator: In
                   values:
                   - cluster-proxy-addon-anp-server
+      {{- with .Values.hubconfig.tolerations }}
       tolerations:
-        - key: dedicated
-          operator: Exists
-          effect: NoSchedule
-        - effect: NoSchedule 
-          key: node-role.kubernetes.io/infra 
-          operator: Exists
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: anp-server
         image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
@@ -230,5 +227,5 @@ spec:
       {{- end }}
       {{- with .Values.hubconfig.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+      {-{ toYaml . | nindent 8 }}
       {{- end }}

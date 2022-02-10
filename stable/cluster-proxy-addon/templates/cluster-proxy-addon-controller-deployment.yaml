@@ -70,13 +70,10 @@ spec:
                   operator: In
                   values:
                   - cluster-proxy-addon-controller
+      {{- with .Values.hubconfig.tolerations }}
       tolerations:
-        - key: dedicated
-          operator: Exists
-          effect: NoSchedule
-        - effect: NoSchedule 
-          key: node-role.kubernetes.io/infra 
-          operator: Exists
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: cluster-proxy
         image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
@@ -84,8 +81,8 @@ spec:
         args:
           - "/cluster-proxy"
           - "controller"
-          - "--anp-public-host={{ template "cluster-proxy-addon.anpPublicHost" . }}"
-          - "--anp-public-port={{ template "cluster-proxy-addon.anpPublicPort" . }}"
+          - '--anp-public-host={{ template "cluster-proxy-addon.anpPublicHost" . }}'
+          - '--anp-public-port={{ template "cluster-proxy-addon.anpPublicPort" . }}'
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -128,5 +125,5 @@ spec:
       {{- end }}
       {{- with .Values.hubconfig.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+      {-{ toYaml . | nindent 8 }}
       {{- end }}
