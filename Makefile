@@ -6,7 +6,7 @@ IMAGE_PULL_POLICY=Always
 
 IMAGE_CLUSET_PROXY=quay.io/stolostron/cluster-proxy:latest
 
-CLUSTER_BASE_DOMAIN=
+CLUSTER_BASE_DOMAIN?=
 
 ensure-helm:
 	mkdir -p _output
@@ -33,6 +33,7 @@ deploy-cluster-proxy: ensure-helm
 	--set image="$(IMAGE_CLUSET_PROXY)" \
 	--set proxyServerImage="$(IMAGE)" \
 	--set proxyAgentImage="$(IMAGE)" \
+	--set cluster_basedomain="$(CLUSTER_BASE_DOMAIN)" 
 .PHONY: deploy-cluster-proxy
 
 clean: ensure-helm
