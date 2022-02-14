@@ -1,0 +1,15 @@
+# Image of the cluster-proxy instances
+image: quay.io/stolostron/cluster-proxy:latest
+imagePullPolicy: Always
+
+# Number of replicas
+replicas: 1
+
+spokeAddonNamespace: "open-cluster-management-cluster-proxy"
+
+proxyServerImage: cluster-proxy
+proxyAgentImage: cluster-proxy
+
+proxyServer:
+  entrypointLoadBalancer: false
+  entrypointAddress: "" # not used in OCP

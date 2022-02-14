@@ -3,6 +3,9 @@ KUBECTL?=kubectl
 
 IMAGE=quay.io/stolostron/cluster-proxy-addon:latest
 IMAGE_PULL_POLICY=Always
+
+IMAGE_CLUSET_PROXY=quay.io/stolostron/cluster-proxy:latest
+
 CLUSTER_BASE_DOMAIN=
 
 ensure-helm:
@@ -22,6 +25,15 @@ deploy: ensure-helm
 	--set global.imageOverrides.cluster_proxy_addon="$(IMAGE)" \
 	--set cluster_basedomain="$(CLUSTER_BASE_DOMAIN)" 
 .PHONY: deploy
+
+deploy-cluster-proxy: ensure-helm
+	$(HELM) install \
+	-n open-cluster-management-addon --create-namespace \
+	cluster-proxy stable/cluster-proxy \
+	--set image="$(IMAGE_CLUSET_PROXY)" \
+	--set proxyServerImage="$(IMAGE)" \
+	--set proxyAgentImage="$(IMAGE)" \
+.PHONY: deploy-cluster-proxy
 
 clean: ensure-helm
 	$(HELM) delete -n open-cluster-management cluster-proxy-addon
