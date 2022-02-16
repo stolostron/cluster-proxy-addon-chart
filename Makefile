@@ -1,11 +1,14 @@
 HELM?=_output/linux-amd64/helm
 KUBECTL?=kubectl
 
-IMAGE=quay.io/stolostron/cluster-proxy-addon:latest
+IMAGE_CLUSTER_PROXY_ADDON?=quay.io/stolostron/cluster-proxy-addon:latest
+IMAGE_CLUSTER_PROXY?=quay.io/stolostron/cluster-proxy:latest
 IMAGE_PULL_POLICY=Always
 
-IMAGE_CLUSET_PROXY=quay.io/stolostron/cluster-proxy:latest
+IMAGE_TAG?=latest
 
+# Using the following command to get the base domain of a OCP cluster
+# export CLUSTER_BASE_DOMAIN=$(kubectl get ingress.config.openshift.io cluster -o=jsonpath='{.spec.domain}')
 CLUSTER_BASE_DOMAIN?=
 
 ensure-helm:
@@ -19,22 +22,14 @@ lint: ensure-helm
 .PHONY: lint
 
 deploy: ensure-helm
-	$(KUBECTL) get ns open-cluster-management ; if [ $$? -ne 0 ] ; then $(KUBECTL) create ns open-cluster-management ; fi
-	$(HELM) install -n open-cluster-management cluster-proxy-addon stable/cluster-proxy-addon \
-	--set global.pullPolicy="$(IMAGE_PULL_POLICY)" \
-	--set global.imageOverrides.cluster_proxy_addon="$(IMAGE)" \
-	--set cluster_basedomain="$(CLUSTER_BASE_DOMAIN)" 
-.PHONY: deploy
-
-deploy-cluster-proxy: ensure-helm
 	$(HELM) install \
 	-n open-cluster-management-addon --create-namespace \
-	cluster-proxy stable/cluster-proxy \
-	--set image="$(IMAGE_CLUSET_PROXY)" \
-	--set proxyServerImage="$(IMAGE)" \
-	--set proxyAgentImage="$(IMAGE)" \
+	cluster-proxy-addon stable/cluster-proxy-addon \
+	--set global.pullPolicy="$(IMAGE_PULL_POLICY)" \
+	--set global.imageOverrides.cluster_proxy_addon="$(IMAGE_CLUSTER_PROXY_ADDON)" \
+	--set global.imageOverrides.cluster_proxy="$(IMAGE_CLUSTER_PROXY)" \
 	--set cluster_basedomain="$(CLUSTER_BASE_DOMAIN)" 
-.PHONY: deploy-cluster-proxy
+.PHONY: deploy
 
 clean: ensure-helm
 	$(HELM) delete -n open-cluster-management cluster-proxy-addon

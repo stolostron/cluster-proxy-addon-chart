@@ -19,23 +19,21 @@ rules:
       - clustermanagementaddons/status
       - managedclusteraddons/status
     verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
+      - '*'
+  - apiGroups:
+      - addon.open-cluster-management.io
+    resources:
+      - managedclusteraddons/finalizers
+    verbs:
+      - '*'
   - apiGroups:
       - proxy.open-cluster-management.io
     resources:
       - managedproxyconfigurations
       - managedproxyconfigurations/status
+      - managedproxyconfigurations/finalizers
     verbs:
-      - get
-      - list
-      - watch
-      - update
-      - patch
+      - '*'
   - apiGroups:
       - certificates.k8s.io
     resources:
@@ -112,3 +110,44 @@ rules:
       - leases
     verbs:
       - "*"
+  # Allow cluster-proxy-addon hub controller to run with openshift library-go
+  - apiGroups:
+      - ""
+    resources:
+      - "configmaps"
+      - "secrets"
+    verbs:
+      - "*"
+  - apiGroups:
+      - "apps"
+    resources:
+      - "replicasets"
+    verbs:
+      - "get"
+  - apiGroups:
+      - ""
+      - "events.k8s.io"
+    resources:
+      - "events"
+    verbs:
+      - "create"
+      - "patch"
+      - "update"
+  # Allow cluster-proxy-addon hub controller to run with addon-framwork
+  - apiGroups:
+      - ""
+    resources:
+      - "configmaps"
+      - "secrets"
+    verbs:
+      - "*"
+  # Allow cluster-proxy-addon hub controller to get managed cluster image registries
+  - apiGroups:
+      - "imageregistry.open-cluster-management.io"
+    resources:
+      - "managedclusterimageregistries"
+      - "managedclusterimageregistries"
+    verbs:
+      - "get"
+      - "list"
+      - "watch"
