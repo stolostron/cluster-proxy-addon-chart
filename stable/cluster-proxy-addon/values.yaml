@@ -1,9 +1,22 @@
+imagePullPolicy: Always
+
+# Number of replicas
+replicas: 1
+
+spokeAddonNamespace: "open-cluster-management-cluster-proxy"
+
+proxyServer:
+  entrypointLoadBalancer: false
+  entrypointAddress: "" # not used in OCP
+
+# Copy from cluster-proxy-addon
 org: stolostron
 
 global:
   pullPolicy: Always
   imageOverrides:
     cluster_proxy_addon: ""
+    cluster_proxy: ""
 
 arch:
   - amd64

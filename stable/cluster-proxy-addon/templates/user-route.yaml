@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ template "cluster-proxy-addon.name" . }}
     chart: {{ template "cluster-proxy-addon.chart" . }}
-    component: cluster-proxy-addon-anp-server
+    component: cluster-proxy-addon-user
     helm.sh/chart: {{ template "cluster-proxy-addon.chart" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
@@ -24,3 +24,4 @@ spec:
   to:
     kind: Service
     name: {{ template "cluster-proxy-addon.name" . }}-user
+
