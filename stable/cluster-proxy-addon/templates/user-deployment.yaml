@@ -80,10 +80,11 @@ spec:
           operator: Exists
       containers:
       - name: kubectl-ui
-        image: {{ .Values.global.imageOverrides.cluster_proxy }}
+        image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
         imagePullPolicy: {{ .Values.global.pullPolicy }}
         args:
-          - "/kubectlui"
+          - "/cluster-proxy"
+          - "user-server"
           - "--host=proxy-entrypoint.open-cluster-management-addon" # Must have namespace at the end
           - "--port=8090"
           - "--proxy-ca-cert=/proxy-ca/ca.crt"
