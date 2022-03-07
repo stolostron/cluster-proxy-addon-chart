@@ -17,6 +17,8 @@ spec:
       hostname:
         value: {{ template "cluster-proxy-addon.anpPublicHost" . }}
       port: 443
+    additionalArgs:
+      - "--keepalive-time=30s" # Use this to keep connection from proxy-agent stay alive 
   proxyAgent:
     image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
     replicas: 1
