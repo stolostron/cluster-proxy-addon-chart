@@ -19,6 +19,18 @@ spec:
       port: 443
     additionalArgs:
       - "--keepalive-time=30s" # Use this to keep connection from proxy-agent stay alive 
+    nodePlacement:
+      tolerations:
+          - key: dedicated
+            operator: Exists
+            effect: NoSchedule
+          - effect: NoSchedule 
+            key: node-role.kubernetes.io/infra 
+            operator: Exists
+      {{- with .Values.hubconfig.nodeSelector }}
+      nodeSelector:
+  {{ toYaml . | indent 8 }}
+      {{- end }}
   proxyAgent:
     image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
     replicas: 1
