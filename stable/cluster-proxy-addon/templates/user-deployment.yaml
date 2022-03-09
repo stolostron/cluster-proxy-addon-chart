@@ -85,7 +85,7 @@ spec:
         args:
           - "/cluster-proxy"
           - "user-server"
-          - "--host=proxy-entrypoint.open-cluster-management-addon" # Must have namespace at the end
+          - "--host=proxy-entrypoint.{{ .Release.Namespace }}" # Must have namespace at the end
           - "--port=8090"
           - "--proxy-ca-cert=/proxy-ca/ca.crt"
           - "--proxy-cert=/proxy-client-tls/tls.crt"
