@@ -61,3 +61,10 @@ Define user route host.
 {{- printf "%s.apps.%s" .Values.user_route.name .Values.cluster_basedomain | trimSuffix "-" -}}
 {{- end }}
 {{- end -}}
+
+{{/*
+Define the namespace of proxy-entrypoint.
+*/}}
+{{- define "cluster-proxy-addon.proxy-entrypoint-namespace" -}}
+{{- printf "proxy-entrypoint.%s" .Release.Namespace -}}
+{{- end -}}

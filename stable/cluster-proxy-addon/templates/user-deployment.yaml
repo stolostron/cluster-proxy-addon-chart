@@ -82,10 +82,11 @@ spec:
       - name: kubectl-ui
         image: {{ .Values.global.imageOverrides.cluster_proxy_addon }}
         imagePullPolicy: {{ .Values.global.pullPolicy }}
-        args:
+        command:
           - "/cluster-proxy"
+        args:
           - "user-server"
-          - "--host=proxy-entrypoint.{{ .Release.Namespace }}" # Must have namespace at the end
+          - "--host={{ template "cluster-proxy-addon.proxy-entrypoint-namespace" . }}"
           - "--port=8090"
           - "--proxy-ca-cert=/proxy-ca/ca.crt"
           - "--proxy-cert=/proxy-client-tls/tls.crt"
