@@ -109,6 +109,13 @@ spec:
             drop:
             - ALL
           privileged: false
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            scheme: HTTP
+            port: 8000
+          initialDelaySeconds: 2
+          periodSeconds: 10
         volumeMounts:
           - name: user-tls-vol
             mountPath: /user-tls
