@@ -14,6 +14,7 @@ org: stolostron
 
 global:
   pullPolicy: Always
+  imagePullSecret: open-cluster-management-image-pull-credentials
   imageOverrides:
     cluster_proxy_addon: ""
     cluster_proxy: ""
