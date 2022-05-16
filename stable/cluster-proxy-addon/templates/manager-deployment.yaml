@@ -88,7 +88,7 @@ spec:
             - --leader-elect=true
             - --signer-secret-namespace={{ .Release.Namespace }}
             - --agent-image-name={{ .Values.global.imageOverrides.cluster_proxy }}
-            - --agent-install-namespace={{ .Values.global.spokeAddonNamespace }}
+            - --agent-install-namespace={{ .Values.spokeAddonNamespace }}
         {{- if .Values.pullSecret }}
       imagePullSecrets:
       - name: {{ .Values.pullSecret }}
